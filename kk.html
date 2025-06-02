@@ -1,0 +1,780 @@
+<!-- LLKC Cafe: Admins can add food photos, guests can't add/edit/delete food. Language switcher added (RU/LV). -->
+
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <title>LLKC Kafejnīca</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,600,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #181a20;
+            --bg2: #23262f;
+            --accent: #ffb347;
+            --accent2: #ff8c42;
+            --text: #f3f3f3;
+            --text2: #bdbdbd;
+            --border: #292c36;
+            --shadow: 0 4px 24px 0 rgba(0,0,0,0.25);
+        }
+        html, body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Poppins', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        body {
+            background: linear-gradient(135deg, #181a20 60%, #23262f 100%);
+        }
+        header {
+            background: var(--bg2);
+            box-shadow: var(--shadow);
+            padding: 24px 0 12px 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        #title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin: 0 0 8px 0;
+        }
+        nav {
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+        }
+        nav a {
+            color: var(--text2);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: color 0.2s;
+            padding: 4px 12px;
+            border-radius: 6px;
+        }
+        nav a:hover, nav a:focus {
+            color: var(--accent);
+            background: rgba(255,179,71,0.08);
+        }
+        .lang-switch {
+            position: absolute;
+            left: 24px;
+            top: 24px;
+        }
+        .lang-switch button {
+            background: var(--bg2);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-right: 6px;
+            padding: 4px 14px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .lang-switch button:hover, .lang-switch button:focus {
+            background: var(--accent);
+            color: var(--bg2);
+        }
+        .container {
+            max-width: 900px;
+            margin: 32px auto 0 auto;
+            background: var(--bg2);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            padding: 32px 18px 32px 18px;
+        }
+        .about {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+        .about img {
+            width: 120px;
+            height: 120px;
+            border-radius: 16px;
+            object-fit: cover;
+            box-shadow: 0 2px 16px 0 rgba(0,0,0,0.18);
+            border: 2px solid var(--accent);
+            background: #222;
+        }
+        .about h2 {
+            margin: 0 0 8px 0;
+            color: var(--accent);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .about p {
+            margin: 0;
+            color: var(--text2);
+            font-size: 1.08rem;
+            max-width: 400px;
+        }
+        .edit-btn {
+            background: var(--accent2);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 18px;
+            font-weight: 600;
+            margin-top: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 2px 8px 0 rgba(255,140,66,0.08);
+            display: inline-block;
+        }
+        .edit-btn:hover, .edit-btn:focus {
+            background: var(--accent);
+        }
+        .contacts {
+            background: #1e2027;
+            border-radius: 12px;
+            padding: 18px 20px 12px 20px;
+            margin-bottom: 32px;
+            box-shadow: 0 2px 12px 0 rgba(0,0,0,0.10);
+        }
+        .contacts h3 {
+            color: var(--accent);
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .contacts p, .contacts a {
+            color: var(--text2);
+            font-size: 1.04rem;
+            margin: 4px 0;
+        }
+        .contacts a {
+            text-decoration: underline;
+            color: var(--accent2);
+        }
+        .contacts img {
+            filter: brightness(1.2) saturate(1.2);
+            vertical-align: middle;
+            margin-right: 2px;
+            transition: filter 0.2s;
+        }
+        .contacts a:hover img {
+            filter: brightness(1.5) saturate(2) drop-shadow(0 0 4px var(--accent));
+        }
+        .menu h3, .reviews-section h3 {
+            color: var(--accent);
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 1.3rem;
+        }
+        .add-food-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 18px;
+            background: #23262f;
+            border-radius: 10px;
+            padding: 12px 10px;
+            box-shadow: 0 2px 8px 0 rgba(255,179,71,0.04);
+        }
+        .add-food-form input, .add-food-form textarea {
+            background: #181a20;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 7px 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .add-food-form input:focus, .add-food-form textarea:focus {
+            border: 1.5px solid var(--accent2);
+        }
+        .add-food-form button {
+            background: var(--accent2);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 7px 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .add-food-form button:hover, .add-food-form button:focus {
+            background: var(--accent);
+        }
+        .menu-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 22px;
+        }
+        .menu-item {
+            background: #23262f;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px 0 rgba(0,0,0,0.10);
+            padding: 18px 14px 14px 14px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            min-height: 220px;
+        }
+        .menu-item img {
+            width: 100%;
+            max-width: 170px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px 0 rgba(255,179,71,0.10);
+            background: #222;
+        }
+        .menu-item h4 {
+            margin: 0 0 6px 0;
+            color: var(--accent);
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .menu-item p {
+            margin: 0 0 8px 0;
+            color: var(--text2);
+            font-size: 0.98rem;
+        }
+        .menu-item span {
+            font-weight: 600;
+            color: var(--accent2);
+            font-size: 1.08rem;
+        }
+        .delete-food-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff4d4f;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px 0 rgba(255,77,79,0.10);
+            transition: background 0.2s;
+        }
+        .delete-food-btn:hover, .delete-food-btn:focus {
+            background: #ff1a1a;
+        }
+        .reviews-section {
+            margin-top: 38px;
+        }
+        .review-form {
+            background: #23262f;
+            border-radius: 10px;
+            padding: 14px 10px 10px 10px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 8px 0 rgba(255,179,71,0.04);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .review-form label {
+            color: var(--accent2);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .review-form input[type="text"], .review-form textarea {
+            background: #181a20;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 7px 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .review-form input[type="text"]:focus, .review-form textarea:focus {
+            border: 1.5px solid var(--accent2);
+        }
+        .review-form button {
+            background: var(--accent2);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 7px 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .review-form button:hover, .review-form button:focus {
+            background: var(--accent);
+        }
+        .stars {
+            display: flex;
+            flex-direction: row-reverse;
+            gap: 2px;
+        }
+        .stars input[type="radio"] {
+            display: none;
+        }
+        .stars label {
+            font-size: 1.3rem;
+            color: var(--accent2);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .stars input[type="radio"]:checked ~ label,
+        .stars label:hover,
+        .stars label:hover ~ label {
+            color: var(--accent);
+        }
+        .reviews-list {
+            margin-top: 10px;
+        }
+        .review {
+            background: #23262f;
+            border-radius: 10px;
+            padding: 14px 14px 10px 14px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px 0 rgba(255,179,71,0.04);
+            position: relative;
+        }
+        .review-name {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+        .review-stars {
+            color: var(--accent2);
+            margin-left: 8px;
+            font-size: 1.1rem;
+        }
+        .review-text {
+            color: var(--text2);
+            margin-top: 6px;
+            font-size: 1rem;
+        }
+        .delete-review-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff4d4f;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px 0 rgba(255,77,79,0.10);
+            transition: background 0.2s;
+        }
+        .delete-review-btn:hover, .delete-review-btn:focus {
+            background: #ff1a1a;
+        }
+        .admin-panel {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 16px;
+            gap: 10px;
+        }
+        .admin-panel button {
+            background: var(--bg2);
+            color: var(--accent2);
+            border: 1px solid var(--accent2);
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 5px 16px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .admin-panel button:hover, .admin-panel button:focus {
+            background: var(--accent2);
+            color: var(--bg2);
+        }
+        /* Responsive */
+        @media (max-width: 700px) {
+            .container {
+                padding: 16px 4vw 24px 4vw;
+            }
+            .about {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 14px;
+            }
+            .about img {
+                width: 90px;
+                height: 90px;
+            }
+            .menu-list {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 480px) {
+            header {
+                padding: 16px 0 8px 0;
+            }
+            #title {
+                font-size: 1.3rem;
+            }
+            nav {
+                gap: 12px;
+            }
+            .lang-switch {
+                left: 10px;
+                top: 10px;
+            }
+            .container {
+                padding: 8px 2vw 16px 2vw;
+            }
+            .about img {
+                width: 70px;
+                height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="lang-switch" id="langSwitch">
+            <button data-lang="lv">LV</button>
+            <button data-lang="ru">RU</button>
+        </div>
+        <h1 id="title">LLKC Kafejnīca</h1>
+        <nav>
+            <a href="#about" id="navAbout">Par mums</a>
+            <a href="#menu" id="navMenu">Ēdienkarte</a>
+            <a href="#reviews" id="navReviews">Atsauksmes</a>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="admin-panel" id="adminPanel">
+            <button id="adminLoginBtn">Admina ieeja</button>
+            <button id="adminLogoutBtn" style="display:none;">Iziet (admins)</button>
+        </div>
+        <section class="about" id="aboutSection">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=facearea&w=256&q=80" alt="LLKC Kafejnīca">
+            <div>
+                <h2 id="aboutTitle">Laipni lūdzam LLKC!</h2>
+                <p id="aboutText">
+                    LLKC — mājīga kafejnīca pašā pilsētas centrā. Piedāvājam svaigus ēdienus, aromātisku kafiju un atmosfēru, kurā gribas atgriezties atkal un atkal. Nāciet pie mums pēc garšas, mājīguma un laba noskaņojuma!
+                </p>
+                <button class="edit-btn" id="editAboutBtn">Rediģēt</button>
+            </div>
+        </section>
+        <div class="contacts">
+            <h3 id="contactsTitle">Kontakti</h3>
+            <p><strong id="emailLabel">E-pasts:</strong> <a href="mailto:ramonagozena@inbox.lv">ramonagozena@inbox.lv</a></p>
+            <p><strong id="phoneLabel">Tālrunis:</strong> <a href="tel:+37128809097">+371 28809097</a></p>
+            <p><strong id="addressLabel">Adrese:</strong> Centrālā iela 15, Rīga, Latvija</p>
+            <p>
+                <a href="https://www.instagram.com/mileto.sia/" target="_blank" title="Instagram">
+                    <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram" style="width:22px;vertical-align:middle;">
+                </a>
+                &nbsp;
+                <a href="https://www.tiktok.com/@sia.mileto" target="_blank" title="TikTok">
+                    <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tiktok.svg" alt="TikTok" style="width:22px;vertical-align:middle;">
+                </a>
+            </p>
+        </div>
+        <section class="menu" id="menuSection">
+            <h3 id="menuTitle">Mūsu ēdienkarte</h3>
+            <form class="add-food-form" id="addFoodForm" style="display:none;">
+                <input type="text" id="foodName" placeholder="Ēdiena nosaukums" required maxlength="32">
+                <textarea id="foodDesc" placeholder="Apraksts" required maxlength="100"></textarea>
+                <input type="text" id="foodPrice" placeholder="Cena (piemēram, 8€)" required maxlength="12" pattern="^[0-9]+€$">
+                <input type="url" id="foodImg" placeholder="Attēla URL (neobligāti)">
+                <button type="submit" id="addFoodBtn">Pievienot ēdienu</button>
+            </form>
+            <div class="menu-list" id="menuList"></div>
+        </section>
+        <section class="reviews-section" id="reviewsSection">
+            <h3 id="reviewsTitle">Viesu atsauksmes</h3>
+            <form class="review-form" id="reviewForm">
+                <label for="name" id="yourNameLabel">Jūsu vārds:</label>
+                <input type="text" id="name" name="name" required maxlength="32" placeholder="Ievadiet vārdu">
+                <label id="yourRatingLabel">Jūsu vērtējums:</label>
+                <div class="stars">
+                    <input type="radio" id="star5" name="rating" value="5" required><label for="star5">&#9733;</label>
+                    <input type="radio" id="star4" name="rating" value="4"><label for="star4">&#9733;</label>
+                    <input type="radio" id="star3" name="rating" value="3"><label for="star3">&#9733;</label>
+                    <input type="radio" id="star2" name="rating" value="2"><label for="star2">&#9733;</label>
+                    <input type="radio" id="star1" name="rating" value="1"><label for="star1">&#9733;</label>
+                </div>
+                <label for="review" id="yourReviewLabel">Jūsu atsauksme:</label>
+                <textarea id="review" name="review" rows="3" required maxlength="300" placeholder="Uzrakstiet savu atsauksmi..."></textarea>
+                <button type="submit" id="leaveReviewBtn">Atstāt atsauksmi</button>
+            </form>
+            <div class="reviews-list" id="reviewsList"></div>
+        </section>
+    </div>
+    <script>
+        // --- Language data ---
+        const translations = {
+            lv: {
+                title: "LLKC Kafejnīca",
+                navAbout: "Par mums",
+                navMenu: "Ēdienkarte",
+                navReviews: "Atsauksmes",
+                adminLoginBtn: "Admina ieeja",
+                adminLogoutBtn: "Iziet (admins)",
+                aboutTitle: "Laipni lūdzam LLKC!",
+                aboutText: "LLKC — mājīga kafejnīca pašā pilsētas centrā. Piedāvājam svaigus ēdienus, aromātisku kafiju un atmosfēru, kurā gribas atgriezties atkal un atkal. Nāciet pie mums pēc garšas, mājīguma un laba noskaņojuma!",
+                editAboutBtn: "Rediģēt",
+                contactsTitle: "Kontakti",
+                emailLabel: "E-pasts:",
+                phoneLabel: "Tālrunis:",
+                addressLabel: "Adrese:",
+                menuTitle: "Mūsu ēdienkarte",
+                addFoodBtn: "Pievienot ēdienu",
+                foodNamePlaceholder: "Ēdiena nosaukums",
+                foodDescPlaceholder: "Apraksts",
+                foodPricePlaceholder: "Cena (piemēram, 8€)",
+                foodImgPlaceholder: "Attēla URL (neobligāti)",
+                reviewsTitle: "Viesu atsauksmes",
+                yourNameLabel: "Jūsu vārds:",
+                yourRatingLabel: "Jūsu vērtējums:",
+                yourReviewLabel: "Jūsu atsauksme:",
+                leaveReviewBtn: "Atstāt atsauksmi",
+                noReviews: "Pagaidām nav atsauksmju. Esiet pirmais!",
+                deleteFoodTitle: "Dzēst ēdienu",
+                deleteReviewTitle: "Dzēst atsauksmi",
+                confirmDeleteFood: "Dzēst šo ēdienu?",
+                confirmDeleteReview: "Dzēst šo atsauksmi?"
+            },
+            ru: {
+                title: "Кафе LLKC",
+                navAbout: "О нас",
+                navMenu: "Меню",
+                navReviews: "Отзывы",
+                adminLoginBtn: "Вход для админа",
+                adminLogoutBtn: "Выйти (админ)",
+                aboutTitle: "Добро пожаловать в LLKC!",
+                aboutText: "LLKC — уютное кафе в самом центре города. Мы предлагаем свежие блюда, ароматный кофе и атмосферу, в которую хочется возвращаться снова и снова. Приходите к нам за вкусом, уютом и хорошим настроением!",
+                editAboutBtn: "Редактировать",
+                contactsTitle: "Контакты",
+                emailLabel: "E-mail:",
+                phoneLabel: "Телефон:",
+                addressLabel: "Адрес:",
+                menuTitle: "Наше меню",
+                addFoodBtn: "Добавить блюдо",
+                foodNamePlaceholder: "Название блюда",
+                foodDescPlaceholder: "Описание",
+                foodPricePlaceholder: "Цена (например, 8€)",
+                foodImgPlaceholder: "URL изображения (необязательно)",
+                reviewsTitle: "Отзывы гостей",
+                yourNameLabel: "Ваше имя:",
+                yourRatingLabel: "Ваша оценка:",
+                yourReviewLabel: "Ваш отзыв:",
+                leaveReviewBtn: "Оставить отзыв",
+                noReviews: "Пока нет отзывов. Будьте первым!",
+                deleteFoodTitle: "Удалить блюдо",
+                deleteReviewTitle: "Удалить отзыв",
+                confirmDeleteFood: "Удалить это блюдо?",
+                confirmDeleteReview: "Удалить этот отзыв?"
+            }
+        };
+
+        let currentLang = 'lv';
+        let isAdmin = false;
+
+        // --- Language switcher ---
+        function updateLangUI() {
+            const t = translations[currentLang];
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('navAbout').innerText = t.navAbout;
+            document.getElementById('navMenu').innerText = t.navMenu;
+            document.getElementById('navReviews').innerText = t.navReviews;
+            document.getElementById('adminLoginBtn').innerText = t.adminLoginBtn;
+            document.getElementById('adminLogoutBtn').innerText = t.adminLogoutBtn;
+            document.getElementById('aboutTitle').innerText = t.aboutTitle;
+            document.getElementById('aboutText').innerText = getAboutText();
+            document.getElementById('editAboutBtn').innerText = t.editAboutBtn;
+            document.getElementById('contactsTitle').innerText = t.contactsTitle;
+            document.getElementById('emailLabel').innerText = t.emailLabel;
+            document.getElementById('phoneLabel').innerText = t.phoneLabel;
+            document.getElementById('addressLabel').innerText = t.addressLabel;
+            document.getElementById('menuTitle').innerText = t.menuTitle;
+            document.getElementById('addFoodBtn').innerText = t.addFoodBtn;
+            document.getElementById('foodName').placeholder = t.foodNamePlaceholder;
+            document.getElementById('foodDesc').placeholder = t.foodDescPlaceholder;
+            document.getElementById('foodPrice').placeholder = t.foodPricePlaceholder;
+            document.getElementById('foodImg').placeholder = t.foodImgPlaceholder;
+            document.getElementById('reviewsTitle').innerText = t.reviewsTitle;
+            document.getElementById('yourNameLabel').innerText = t.yourNameLabel;
+            document.getElementById('yourRatingLabel').innerText = t.yourRatingLabel;
+            document.getElementById('yourReviewLabel').innerText = t.yourReviewLabel;
+            document.getElementById('leaveReviewBtn').innerText = t.leaveReviewBtn;
+            renderMenu();
+            renderReviews();
+        }
+        document.querySelectorAll('#langSwitch button').forEach(btn => {
+            btn.onclick = function() {
+                currentLang = this.getAttribute('data-lang');
+                updateLangUI();
+            };
+        });
+
+        // --- Admin logic ---
+        function updateAdminUI() {
+            document.body.classList.toggle('admin', isAdmin);
+            document.getElementById('adminLogoutBtn').style.display = isAdmin ? '' : 'none';
+            document.getElementById('adminLoginBtn').style.display = isAdmin ? 'none' : '';
+            document.getElementById('addFoodForm').style.display = isAdmin ? 'block' : 'none';
+            document.getElementById('aboutSection').classList.toggle('admin', isAdmin);
+            document.getElementById('menuSection').classList.toggle('admin', isAdmin);
+            document.getElementById('reviewsSection').classList.toggle('admin', isAdmin);
+            renderMenu();
+            renderReviews();
+        }
+        document.getElementById('adminLoginBtn').onclick = function() {
+            const pass = prompt('Ievadiet paroli / Введите пароль:');
+            if (pass === 'Leonardos764') {
+                isAdmin = true;
+                updateAdminUI();
+            } else if (pass !== null) {
+                alert('Nepareiza parole / Неверный пароль');
+            }
+        };
+        document.getElementById('adminLogoutBtn').onclick = function() {
+            isAdmin = false;
+            updateAdminUI();
+        };
+
+        // --- About section logic ---
+        function getAboutText() {
+            const key = 'llkc_about_' + currentLang;
+            return localStorage.getItem(key) || translations[currentLang].aboutText;
+        }
+        function setAboutText(text) {
+            localStorage.setItem('llkc_about_' + currentLang, text);
+        }
+        document.getElementById('editAboutBtn').onclick = function() {
+            if (!isAdmin) return;
+            const newText = prompt(translations[currentLang].editAboutBtn, getAboutText());
+            if (newText !== null && newText.trim()) {
+                setAboutText(newText.trim());
+                document.getElementById('aboutText').innerText = getAboutText();
+            }
+        };
+
+        // --- Menu logic ---
+        function getMenu() {
+            return JSON.parse(localStorage.getItem('llkc_menu') || 'null') || [
+                {name:"Капучино",desc:"Классический итальянский кофе с молочной пенкой.",price:"3€",img:"https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=facearea&w=256&q=80"},
+                {name:"Паста Карбонара",desc:"Паста с беконом, сливками и сыром пармезан.",price:"8€",img:"https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=400&q=80"},
+                {name:"Чизкейк",desc:"Нежный десерт с клубничным соусом.",price:"5€",img:"https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=facearea&w=256&q=80"},
+                {name:"Салат Цезарь",desc:"Классический салат с курицей и соусом Цезарь.",price:"7€",img:"https://images.unsplash.com/photo-1464306076886-debca5e8a6b0?auto=format&fit=crop&w=400&q=80"}
+            ];
+        }
+        function saveMenu(menu) {
+            localStorage.setItem('llkc_menu', JSON.stringify(menu));
+        }
+        function renderMenu() {
+            const menu = getMenu();
+            const menuList = document.getElementById('menuList');
+            menuList.innerHTML = '';
+            menu.forEach((item, idx) => {
+                const div = document.createElement('div');
+                div.className = 'menu-item';
+                div.innerHTML = `
+                    ${item.img ? `<img src="${item.img.replace(/"/g,"&quot;")}" alt="${item.name.replace(/</g,"&lt;")}">` : ''}
+                    <h4>${item.name.replace(/</g,"&lt;")}</h4>
+                    <p>${item.desc.replace(/</g,"&lt;")}</p>
+                    <span>${item.price.replace(/</g,"&lt;")}</span>
+                    ${isAdmin ? `<button class="delete-food-btn" data-idx="${idx}" title="${translations[currentLang].deleteFoodTitle}">&times;</button>` : ''}
+                `;
+                if (isAdmin) {
+                    div.querySelector('.delete-food-btn').onclick = function() {
+                        if (confirm(translations[currentLang].confirmDeleteFood)) {
+                            menu.splice(idx,1);
+                            saveMenu(menu);
+                            renderMenu();
+                        }
+                    };
+                }
+                menuList.appendChild(div);
+            });
+        }
+        document.getElementById('addFoodForm').onsubmit = function(e) {
+            e.preventDefault();
+            if (!isAdmin) return;
+            const name = document.getElementById('foodName').value.trim();
+            const desc = document.getElementById('foodDesc').value.trim();
+            const price = document.getElementById('foodPrice').value.trim();
+            const img = document.getElementById('foodImg').value.trim();
+            if (!name || !desc || !price.match(/^[0-9]+€$/)) return;
+            const menu = getMenu();
+            menu.push({name,desc,price,img});
+            saveMenu(menu);
+            this.reset();
+            renderMenu();
+        };
+
+        // --- Reviews logic ---
+        function getReviews() {
+            return JSON.parse(localStorage.getItem('llkc_reviews') || '[]');
+        }
+        function saveReviews(reviews) {
+            localStorage.setItem('llkc_reviews', JSON.stringify(reviews));
+        }
+        function renderReviews() {
+            const reviews = getReviews();
+            const reviewsList = document.getElementById('reviewsList');
+            reviewsList.innerHTML = '';
+            if (reviews.length === 0) {
+                reviewsList.innerHTML = `<p>${translations[currentLang].noReviews}</p>`;
+                return;
+            }
+            reviews.slice().reverse().forEach((r, i, arr) => {
+                const idx = arr.length - 1 - i;
+                const div = document.createElement('div');
+                div.className = 'review';
+                div.innerHTML = `
+                    <span class="review-name">${r.name.replace(/</g,"&lt;")}</span>
+                    <span class="review-stars">${'&#9733;'.repeat(r.rating)}${'&#9734;'.repeat(5 - r.rating)}</span>
+                    <div class="review-text">${r.text.replace(/</g, "&lt;")}</div>
+                    ${isAdmin ? `<button class="delete-review-btn" data-idx="${idx}" title="${translations[currentLang].deleteReviewTitle}">&times;</button>` : ''}
+                `;
+                if (isAdmin) {
+                    div.querySelector('.delete-review-btn').onclick = function() {
+                        if (confirm(translations[currentLang].confirmDeleteReview)) {
+                            const revs = getReviews();
+                            revs.splice(idx,1);
+                            saveReviews(revs);
+                            renderReviews();
+                        }
+                    };
+                }
+                reviewsList.appendChild(div);
+            });
+        }
+        document.getElementById('reviewForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const rating = +document.querySelector('input[name="rating"]:checked').value;
+            const text = document.getElementById('review').value.trim();
+            if (!name || !text || !rating) return;
+            const reviews = getReviews();
+            reviews.push({ name, rating, text });
+            saveReviews(reviews);
+            this.reset();
+            renderReviews();
+        });
+
+        // --- Initial render ---
+        updateLangUI();
+        updateAdminUI();
+        document.getElementById('aboutText').innerText = getAboutText();
+    </script>
+</body>
+</html>
